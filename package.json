@@ -1,0 +1,36 @@
+{
+  "name": "Tutorapi",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "conekta-node": "0.0.0",
+    "bcrypt": "^0.8.1",
+    "connect-mongo": "0.3.x",
+    "express": "3.4.6",
+    "faker": "^2.1.2",
+    "grunt-jslint": "^1.1.12",
+    "grunt-shell": "^1.1.1",
+    "mongoose": "3.6.20",
+    "q": "^1.2.0",
+    "underscore": "1.6.0",
+    "snowball": "*",
+    "nearest-neighbor":"*"
+  },
+  "devDependencies": {
+    "blanket": "~1.1.6",
+    "chai": "= 1.1.0",
+    "expect.js": "~0.2.0",
+    "grunt": "~0.4.2",
+    "grunt-nodemon": "~0.1.2",
+    "grunt-exec": "~0.4.2",
+    "grunt-mocha-test": "~0.8.1",
+    "mocha": "= 1.7.4",
+    "mocha-mongoose": "x",
+    "request": "~2.30.0",
+    "supertest": "~0.7.0",
+    "q" : "~1.2.0"
+  }
+}
