@@ -13,7 +13,7 @@ var baseSchema = new Schema({
   delegacion: String,
   longitud: Number,
   latitud: Number,
-  nombre: String,
+  nombre: String
 });
 
 module.exports = mongoose.model('Base', baseSchema);

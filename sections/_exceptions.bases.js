@@ -19,7 +19,7 @@ function makeRequest(idEstacion) {
         var position = response.text.indexOf('{"disponibilidad');
         try {
           deferred.resolve(JSON.parse(response.text.substring(position, response.text.length)));
-        } catch (err) {
+        } catch (error) {
           deferred.resolve({});
         }
       }
@@ -35,6 +35,7 @@ function getStatus(bicycles) {
 }
 
 module.exports = function (server) {
+  /*jslint unparam:true */
   server.get('/v1/bases/availability', function (req, res) {
     var promises,
       allBases;
@@ -76,7 +77,7 @@ module.exports = function (server) {
               );
             });
         }
-      )
-
+      );
   });
+  /*jslint unparam:false */
 };
