@@ -1,20 +1,36 @@
 /* jslint node: true */
 'use strict';
 
-var PowerPoint = require('../mongoose_models/power-point');
+var R = require('ramda'),
+  PowerPoint = require('../mongoose_models/power-point'),
+  User = require('../mongoose_models/user');
 
 module.exports = function (server) {
-  var point = new PowerPoint({
-      coordinates: {
-        latitude: 19.473588,
-        longitude: -99.141543
+  server.post('/v1/power-points/multi', function (req, res) {
+    var points = R.map(
+      function (point) {
+        point.team = req.body.team;
+        return new PowerPoint(point);
       },
-      team: 'green'
-    });
+      req.body.points
+    );
 
-  PowerPoint
-    .addPoint(point)
-    .then(function (resolve) {
-      console.log(resolve);
-    });
+    PowerPoint.addPointsArray(points)
+      .then(function (result) {
+        User
+          .update(
+            { username: req.body.username },
+            {
+              $inc: {
+                'stats.kilometers_traveled': req.body.kilometers_traveled,
+                'stats.power_points.captured': result.captured,
+                'stats.power_points.damaged': result.damaged,
+                'stats.power_points.destroyed': result.destroyed,
+                'stats.power_points.fortified': result.fortified
+              }
+            }
+          )
+          .exec();
+      });
+  });
 };

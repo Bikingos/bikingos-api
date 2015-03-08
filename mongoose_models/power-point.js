@@ -115,4 +115,40 @@ powerPointSchema.statics.addPoint = function (newPoint) {
   return deferred.promise;
 };
 
+  powerPointSchema.statics.addPointsArray = function (points) {
+  var that = this,
+    deferred = Q.defer(),
+    promises;
+
+  promises = R.map(
+    function (point) {
+      return that.addPoint(point);
+    },
+    points
+  );
+
+  Q.all(promises)
+    .then(function (responses) {
+      deferred.resolve(R.reduce(
+        function (accum, response) {
+          accum.captured += response.captured;
+          accum.damaged += response.damaged;
+          accum.destroyed += response.destroyed;
+          accum.fortified += response.fortified;
+
+          return accum;
+        },
+        {
+          captured: 0,
+          damaged: 0,
+          destroyed: 0,
+          fortified: 0
+        },
+        responses
+      ));
+    });
+
+  return deferred.promise;
+};
+
 module.exports = mongoose.model('PowerPoint', powerPointSchema);

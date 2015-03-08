@@ -16,6 +16,7 @@ var userSchema = new Schema({
     trim: true,
     required: true
   },
+  idEcobici: { type: String }
   //TODO add email validation via regex
   email: { type: String },
   password: { type: String },
@@ -32,9 +33,10 @@ var userSchema = new Schema({
     },
     power_points: {
       _id: false,
-      captured: Number,
-      destroyed: Number,
-      fortified: Number
+      captured: { type: Number, default: 0 },
+      damaged: { type: Number, default: 0 },
+      destroyed: { type: Number, default: 0 },
+      fortified: { type: Number, default: 0 }
     }
   }
 });
@@ -74,6 +76,10 @@ userSchema.methods.comparePassword = function (candidatePassword, callback) {
     }
     callback(null, isMatch);
   });
+};
+
+userSchema.methods.updateEcobiciData = function () {
+  
 };
 
 module.exports = mongoose.model('User', userSchema);
