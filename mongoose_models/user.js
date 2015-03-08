@@ -22,6 +22,7 @@ var userSchema = new Schema({
 
   // Stats information
   stats: {
+    trips: Number,
     kilometers_traveled: Number,
     contaminants_avoided: Number,
     bases: {
