@@ -18,6 +18,9 @@ module.exports = function (server) {
 
     PowerPoint.addPointsArray(points)
       .then(function (result) {
+        var experience = req.body.kilometers_traveled + result.captured +
+          result.damaged + result.destroyed + result.fortified;
+
         Q
           .all([
             User
@@ -25,6 +28,7 @@ module.exports = function (server) {
                 { username: req.body.username },
                 {
                   $inc: {
+                    'stats.experience': experience,
                     'stats.kilometers_traveled': req.body.kilometers_traveled,
                     'stats.power_points.captured': result.captured,
                     'stats.power_points.damaged': result.damaged,
