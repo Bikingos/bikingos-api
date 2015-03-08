@@ -115,7 +115,7 @@ powerPointSchema.statics.addPoint = function (newPoint) {
   return deferred.promise;
 };
 
-  powerPointSchema.statics.addPointsArray = function (points) {
+powerPointSchema.statics.addPointsArray = function (points) {
   var that = this,
     deferred = Q.defer(),
     promises;

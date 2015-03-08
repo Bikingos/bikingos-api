@@ -2,9 +2,13 @@
 'use strict';
 
 var mongoose = require('mongoose'),
-  Schema = mongoose.Schema,
   bcrypt = require('bcrypt'),
-  SALT_WORK_FACTOR = 10;
+  request = require('superagent'),
+  R = require('ramda'),
+  Schema = mongoose.Schema,
+  SALT_WORK_FACTOR = 10,
+
+  Medal = require('./medal');
 
 var userSchema = new Schema({
   '_id': false,
@@ -16,20 +20,21 @@ var userSchema = new Schema({
     trim: true,
     required: true
   },
-  idEcobici: { type: String }
+  password: { type: String, required: true },
+  idEcobici: { type: String },
+  team: String,
   //TODO add email validation via regex
   email: { type: String },
-  password: { type: String },
 
   // Stats information
   stats: {
-    trips: Number,
-    kilometers_traveled: Number,
-    contaminants_avoided: Number,
+    trips: { type: Number, default: 0 },
+    kilometers_traveled: { type: Number, default: 0 },
+    contaminants_avoided: { type: Number, default: 0 },
     bases: {
       _id: false,
-      visited: Number,
-      unique: Number
+      visited: { type: Number, default: 0 },
+      unique: { type: Number, default: 0 }
     },
     power_points: {
       _id: false,
@@ -40,7 +45,6 @@ var userSchema = new Schema({
     }
   }
 });
-
 
 userSchema.pre('save', function (next) {
   var user = this;
@@ -78,8 +82,38 @@ userSchema.methods.comparePassword = function (candidatePassword, callback) {
   });
 };
 
-userSchema.methods.updateEcobiciData = function () {
-  
+userSchema.methods.getMedals = function () {
+  var userStats = {
+    trips: this.stats.trips,
+    kilometers_traveled: this.stats.kilometers_traveled,
+    contaminants_avoided: this.stats.contaminants_avoided,
+    bases_visited: this.stats.bases.visited,
+    bases_unique: this.stats.bases.unique,
+    power_points_captured: this.stats.power_points.captured,
+    power_points_damaged: this.stats.power_points.damaged,
+    power_points_destroyed: this.stats.power_points.destroyed,
+    power_points_fortified: this.stats.power_points.fortified
+  };
+
+  return Medal
+    .find()
+    .exec()
+    .then(function (medals) {
+      return R.map(
+        function (medal) {
+          return {
+            name: medal.name,
+            title: medal.title,
+            needed: medal.needed,
+            unit: medal.unit,
+            type: medal.type,
+            unlocked: userStats[medal.name] > medal.needed,
+            stat: userStats[medal.name]
+          };
+        },
+        medals
+      );
+    });
 };
 
 module.exports = mongoose.model('User', userSchema);

@@ -6,6 +6,7 @@ var R = require('ramda'),
   User = require('../mongoose_models/user');
 
 module.exports = function (server) {
+  /*jslint unparam:true */
   server.post('/v1/power-points/multi', function (req, res) {
     var points = R.map(
       function (point) {
@@ -33,4 +34,5 @@ module.exports = function (server) {
           .exec();
       });
   });
+  /*jslint unparam:false */
 };
