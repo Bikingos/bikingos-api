@@ -19,5 +19,5 @@ module.exports = function (server) {
           });
       });
   });
-  /*jslint unparam:true */
+  /*jslint unparam:false */
 };

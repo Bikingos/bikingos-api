@@ -26,6 +26,7 @@ var userSchema = new Schema({
   idEcobici: { type: String },
   team: String,
   level: { type: Number, default: 1 },
+  nextLevel: { type: Number, default: 1000 },
   avatar: String,
   //TODO add email validation via regex
   email: { type: String },
