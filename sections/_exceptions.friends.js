@@ -48,7 +48,7 @@ module.exports = function (server) {
         teamId: 1,
         experience: 4500,
         nextLevel: 7500,
-        avatar: 'http://www.bellanaija.com/wp-content/uploads/2012/10/Mark-Zuckerberg-507402-1-402.jpg'
+        avatar: 'https://fbcdn-sphotos-e-a.akamaihd.net/hphotos-ak-xpf1/v/t1.0-9/1800462_10152008727592709_655566026_n.jpg?oh=ba6e3b7d7f768f25cda0fb4a5d6abcb2&oe=55767418&__gda__=1433870661_7d7700932a45032e5c361aeb3c5d0eab'
       },
       {
         username: 'Wolverine',
