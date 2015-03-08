@@ -2,6 +2,8 @@
 'use strict';
 
 var R = require('ramda'),
+  Chance = require('chance'),
+  chance = new Chance(),
   Q = require('q'),
   request = require('superagent'),
   Base = require('../mongoose_models/base');
@@ -12,7 +14,8 @@ function makeRequest(idEstacion) {
   request
     .get('http://datos.labplc.mx/movilidad/ecobici/' + idEstacion + '.json')
     .accept('application/json')
-    .end(function (response) {
+    .end(function (err, response) {
+      if (err) { console.log(err); }
       try {
         deferred.resolve(JSON.parse(response.text));
       } catch (err) {
@@ -37,6 +40,28 @@ function getStatus(bicycles) {
 module.exports = function (server) {
   /*jslint unparam:true */
   server.get('/v1/bases/availability', function (req, res) {
+    Base
+      .find()
+      .exec()
+      .then(
+        function (bases) {
+          res.send(R.map(
+            function (base) {
+              return {
+                status: chance.pick(['normal', 'normal', 'normal', 'normal', 'special']),
+                coordinates: {
+                  latitude: base.latitud,
+                  longitude: base.longitud
+                }
+              }
+            },
+            bases
+          ));
+        }
+      );
+  });
+
+  server.get('/v1/bases/availability/real', function (req, res) {
     var promises,
       allBases;
 
