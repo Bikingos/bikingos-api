@@ -20,7 +20,7 @@ function makeRequest(idEstacion) {
         try {
           deferred.resolve(JSON.parse(response.text.substring(position, response.text.length)));
         } catch (error) {
-          deferred.resolve({});
+          deferred.resolve({ disponibilidad: false, id: idEstacion });
         }
       }
     });
@@ -70,7 +70,13 @@ module.exports = function (server) {
                       };
                     }
 
-                    return {};
+                    return {
+                      status: 'normal',
+                      coordinates: {
+                        latitude: allBases[response.disponibilidad.estacion_id].latitud,
+                        longitude: allBases[response.disponibilidad.estacion_id].longitud
+                      }
+                    };
                   },
                   responses
                 )
