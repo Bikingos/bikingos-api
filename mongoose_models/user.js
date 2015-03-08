@@ -4,6 +4,8 @@
 var mongoose = require('mongoose'),
   bcrypt = require('bcrypt'),
   request = require('superagent'),
+  moment = require('moment'),
+  Q = require('q'),
   R = require('ramda'),
   Schema = mongoose.Schema,
   SALT_WORK_FACTOR = 10,
@@ -23,11 +25,15 @@ var userSchema = new Schema({
   password: { type: String, required: true },
   idEcobici: { type: String },
   team: String,
+  level: { type: Number, default: 1 },
+  avatar: String,
   //TODO add email validation via regex
   email: { type: String },
 
   // Stats information
   stats: {
+    experience: { type: Number, default: 0 },
+    time: { type: Number, default: 0 },
     trips: { type: Number, default: 0 },
     kilometers_traveled: { type: Number, default: 0 },
     contaminants_avoided: { type: Number, default: 0 },
@@ -80,6 +86,57 @@ userSchema.methods.comparePassword = function (candidatePassword, callback) {
     }
     callback(null, isMatch);
   });
+};
+
+userSchema.methods.updateEcobiciData = function () {
+  var that = this,
+    deferred = Q.defer();
+
+  request
+    .get('http://datos.labplc.mx/movilidad/ecobici/usuario/' + this.idEcobici + '.json')
+    .accept('application/json')
+    .end(function (res) {
+      var response = JSON.parse(res.text).ecobici.viajes,
+        trips = response.length,
+        basesVisited = trips * 2,
+        tiempo,
+        uniqueBases;
+
+      uniqueBases = R.uniq(
+        R.concat(
+          R.pluck('station_arrived', response),
+          R.pluck('station_removed', response)
+        )
+      ).length;
+
+      tiempo = R.compose(
+        R.reduce(
+          function (accum, minutes) {
+            return accum + minutes;
+          },
+          0
+        ),
+        R.map(
+          function (trip) {
+            var initial = moment(trip.date_removed),
+              final = moment(trip.date_arrived);
+
+            return final.diff(initial, 'minutes');
+          }
+        )
+      )(response);
+
+      that.stats.time = tiempo;
+      that.stats.trips = trips;
+      that.stats.bases.visited = basesVisited;
+      that.stats.bases.unique = uniqueBases;
+
+      that.stats.contaminants_avoided = that.stats.kilometers_traveled * tiempo;
+
+      that.save(deferred.resolve);
+    });
+
+  return deferred.promise;
 };
 
 userSchema.methods.getMedals = function () {
